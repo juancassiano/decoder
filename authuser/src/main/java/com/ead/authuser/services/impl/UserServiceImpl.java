@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.repositories.UserRepository;
 import com.ead.authuser.services.UserService;
+import com.ead.authuser.specifications.SpecificationTemplate.UserSpec;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -52,5 +53,10 @@ public class UserServiceImpl implements UserService {
   @Override
   public Page<UserModel> findAll(Pageable pageable) {
     return userRepository.findAll(pageable);
+  }
+
+  @Override
+  public Page<UserModel> findAll(Pageable pageable, UserSpec spec) {
+    return userRepository.findAll(spec, pageable);
   }
 }
