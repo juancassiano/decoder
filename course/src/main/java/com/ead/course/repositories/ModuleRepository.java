@@ -2,12 +2,13 @@ package com.ead.course.repositories;
 
 import java.util.UUID;
 
-import org.aspectj.apache.bcel.classfile.ModuleMainClass;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.ead.course.models.ModuleModel;
+
 
 @Repository
-public interface ModuleRepository extends JpaRepository<ModuleMainClass, UUID> {
+public interface ModuleRepository extends JpaRepository<ModuleModel, UUID> {
   
 }
