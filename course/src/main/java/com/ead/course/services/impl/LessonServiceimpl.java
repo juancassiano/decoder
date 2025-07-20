@@ -39,6 +39,4 @@ public class LessonServiceimpl implements LessonService {
   public List<LessonModel> findAllByModule(UUID moduleId) {
     return lessonRepository.findAllLessonsIntoModule(moduleId);
   }
-
-  
 }
