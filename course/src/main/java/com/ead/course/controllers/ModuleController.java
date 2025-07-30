@@ -69,8 +69,9 @@ public class ModuleController {
 
   @PutMapping("/{moduleId}")
   public ResponseEntity<Object> updateModule(@PathVariable(value = "courseId") UUID courseId, 
-                                              @PathVariable(value = "moduleId") UUID moduleId, 
-                                              @RequestBody @Valid ModuleDto moduleDto) {
+    @PathVariable(value = "moduleId") UUID moduleId, 
+    @RequestBody @Valid ModuleDto moduleDto) {
+    
     Optional<ModuleModel> moduleModelOptional = moduleService.findModuleIntoCourse(courseId, moduleId);
     if (!moduleModelOptional.isPresent()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Module not found for this course.");
