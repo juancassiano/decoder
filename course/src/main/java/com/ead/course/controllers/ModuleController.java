@@ -32,6 +32,9 @@ import com.ead.course.services.CourseService;
 import com.ead.course.services.ModuleService;
 import com.ead.course.specifications.SpecificationTemplate;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 @RestController
 @RequestMapping("/courses/{courseId}/modules")
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -44,8 +47,10 @@ public class ModuleController {
 
   @PostMapping()
   public ResponseEntity<Object> saveModule(@PathVariable(value = "courseId") UUID courseid, @RequestBody @Valid ModuleDto moduleDto) {
+    log.debug("POST saveModule moduleDto received: {}", moduleDto);
     Optional<CourseModel> courseModelOptional = courseService.findById(courseid);
     if (!courseModelOptional.isPresent()) {
+      log.warn("Course not found with ID: {}", courseid);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
     }
 
@@ -53,17 +58,24 @@ public class ModuleController {
     BeanUtils.copyProperties(moduleDto, moduleModel);
     moduleModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
     moduleModel.setCourse(courseModelOptional.get());
+
+    log.info("Module saved successfully with ID: {}", moduleModel.getModuleId());
     return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.save(moduleModel));
   }
 
   @DeleteMapping("/{moduleId}")
   public ResponseEntity<Object> deleteModule(@PathVariable(value = "courseId") UUID courseId, @PathVariable(value = "moduleId") UUID moduleId) {
+    log.debug("DELETE deleteModule moduleId received: {}", moduleId);
     Optional<ModuleModel> moduleModelOptional = moduleService.findModuleIntoCourse(courseId, moduleId);
     if (!moduleModelOptional.isPresent()) {
+      log.warn("Module not found for course ID: {} and module ID: {}", courseId, moduleId);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Module not found for this course.");
     }
 
     moduleService.delete(moduleModelOptional.get());
+
+    log.debug("Module deleted successfully with ID: {}", moduleId);
+    log.info("Module deleted successfully with ID: {}", moduleId);
     return ResponseEntity.status(HttpStatus.OK).body("Module deleted successfully.");
   }
 
@@ -72,14 +84,17 @@ public class ModuleController {
     @PathVariable(value = "moduleId") UUID moduleId, 
     @RequestBody @Valid ModuleDto moduleDto) {
     
+    log.debug("PUT updateModule moduleDto received: {}", moduleDto);
     Optional<ModuleModel> moduleModelOptional = moduleService.findModuleIntoCourse(courseId, moduleId);
     if (!moduleModelOptional.isPresent()) {
+      log.warn("Module not found for course ID: {} and module ID: {}", courseId, moduleId);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Module not found for this course.");
     }
     ModuleModel moduleModel = moduleModelOptional.get();
     moduleModel.setTitle(moduleDto.getTitle());
     moduleModel.setDescription(moduleDto.getDescription());
 
+    log.info("Module updated successfully with ID: {}", moduleId);
     return ResponseEntity.status(HttpStatus.OK).body(moduleService.save(moduleModel));
   }  
 
