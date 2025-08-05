@@ -12,10 +12,10 @@ public class UsernameValidatorImpl implements ConstraintValidator<UsernameConstr
 
     @Override
     public boolean isValid(String username, ConstraintValidatorContext context) {
-        if (username == null || username.trim().isEmpty() || username.contains("")) {
+        if (username == null || username.trim().isEmpty()) {
             return false; // Username cannot be null or empty
         }
-        return true;
+        return  username.matches("^[a-zA-Z0-9_]{4,20}$");
     }
 
 }
