@@ -16,7 +16,6 @@ import com.ead.course.models.LessonModel;
 import com.ead.course.repositories.LessonRepository;
 import com.ead.course.services.LessonService;
 
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 @Service
 public class LessonServiceimpl implements LessonService {
