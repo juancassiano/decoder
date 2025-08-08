@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.specifications.SpecificationTemplate.UserSpec;
@@ -26,7 +27,7 @@ public interface UserService {
 
   Page<UserModel> findAll(Pageable pageable);
 
-  Page<UserModel> findAll(Pageable pageable, UserSpec spec);
+Page<UserModel> findAll(Specification<UserModel> spec, Pageable pageable);
 
   
 }
