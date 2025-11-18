@@ -24,7 +24,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class CourseClient {
+public class AuthUserClient {
   
   @Autowired
   private RestTemplate restTemplate;
@@ -55,6 +55,15 @@ public class CourseClient {
     log.info("Ending request /users courseId {}", courseId);
 
     return new PageImpl<>(searchResult);
+  }
+
+  public ResponseEntity<UserDto> getOneUserById(UUID userId){
+    String url = REQUEST_URL_AUTHUSER + "/users/" + userId;
+
+    log.debug("GET getOneUserById: {}", url);
+    log.info("GET getOneUserById: {}", url);
+
+    return restTemplate.exchange(url, HttpMethod.GET, null, UserDto.class);
   }
 
 }
