@@ -6,8 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.ead.authuser.models.UserCourseModel;
+import com.ead.authuser.models.UserModel;
 
 @Repository
 public interface UserCourseRepository extends JpaRepository<UserCourseModel, UUID> {
+
+  boolean existsByUserAndCourseId(UserModel userModel, UUID courseId);
   
 }
