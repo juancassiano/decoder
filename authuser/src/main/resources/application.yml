@@ -31,7 +31,7 @@ logging:
 ead:
   api:
     url:
-      courses: 'http://ead-course-service' 
+      courses: 'http://ead-course-service/ead-course' 
 
 eureka:
   client:
