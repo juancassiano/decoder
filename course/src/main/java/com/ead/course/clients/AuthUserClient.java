@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-import com.ead.course.dtos.CourseDto;
 import com.ead.course.dtos.CourseUserDto;
 import com.ead.course.dtos.ResponsePageDto;
 import com.ead.course.dtos.UserDto;
@@ -73,6 +72,12 @@ public class AuthUserClient {
     courseUserDto.setCourseId(courseId);
     courseUserDto.setUserId(userId);
     restTemplate.postForObject(url, courseUserDto, String.class);
+  }
+
+  public void deleteCourseInAuthUser(UUID courseId) {
+    String url = REQUEST_URL_AUTHUSER + "/users/courses/" + courseId;
+
+    restTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
   }
 
 }

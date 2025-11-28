@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RestController
-@RequestMapping("/users/{userId}/courses")
+@RequestMapping
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class UserCourseController {
 
@@ -45,31 +46,46 @@ public class UserCourseController {
   @Autowired
   private UserCourseService userCourseService;
 
-  @GetMapping
+  @GetMapping("/users/{userId}/courses")
   public ResponseEntity<Page<CourseDto>> getAllCoursesByUser(@PathVariable (value = "userId") UUID userId,
     @PageableDefault (page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable) {
     
     log.debug("GET getAllCoursesByUser");
-
     return ResponseEntity.status(HttpStatus.OK).body(courseClient.getAllCoursesByUser(userId, pageable));
   }
 
-  @PostMapping("/subscription")
+  @PostMapping("/users/{userId}/courses/subscription")
   public ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable (value = "userId") UUID userId, @RequestBody @Valid UserCourseDto userCourseDto){
     log.debug("POST saveSubscriptionUserInCourse userId {} ", userId);
     
     Optional<UserModel> userModelOptional = userService.findById(userId);
 
     if (!userModelOptional.isPresent()) {
+      log.warn("User {} not found", userId);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
     if(userCourseService.existsByUserAndCourseId(userModelOptional.get(), userCourseDto.getCourseId())) {
+      log.warn("User {} already subscribed in course {}", userId, userCourseDto.getCourseId());
       return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: User already subscribed in this course");
     }
 
     UserCourseModel userCourseModel = userCourseService.save(userModelOptional.get().convertToUserCourseModel(userCourseDto.getCourseId()));
-
+    log.info("User {} subscribed in course {}", userId, userCourseDto.getCourseId());
     return ResponseEntity.status(HttpStatus.CREATED).body(userCourseModel);
 
+  }
+
+  @DeleteMapping("/users/courses/{courseId}")
+  public ResponseEntity<Object> deleteUserCourseByCourse(@PathVariable(value = "courseId") UUID courseId){
+    log.debug("DELETE deleteUserCourseByCourse courseId {} ", courseId);
+
+    if(!userCourseService.existsByCourseId(courseId)){
+      log.warn("No userCourse found for courseId {} ", courseId);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No userCourse found for this course");
+    }
+    userCourseService.deleteUserCourseByCourse(courseId);
+    log.info("All UserCourse for courseId {} have been deleted", courseId);
+    return ResponseEntity.status(HttpStatus.OK).body("All UserCourse for the course have been deleted");
+    
   }
 }
