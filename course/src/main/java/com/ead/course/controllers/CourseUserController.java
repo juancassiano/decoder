@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RestController
-@RequestMapping("/courses/{courseId}/users")
+@RequestMapping
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class CourseUserController {
 
@@ -47,7 +48,7 @@ public class CourseUserController {
   @Autowired
   private CourseUserService courseUserService;
 
-  @GetMapping
+  @GetMapping("/courses/{courseId}/users")
   public ResponseEntity<Object> getAllUsersByCourse(@PathVariable (value = "courseId") UUID courseId,
     @PageableDefault (page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
 
@@ -61,7 +62,7 @@ public class CourseUserController {
     return ResponseEntity.status(HttpStatus.OK).body(authUserClient.getAllUsersByCourse(courseId, pageable));
   }
 
-  @PostMapping("/subscription")
+  @PostMapping("/courses/{courseId}/users/subscription")
   public ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable(value = "courseId") UUID courseId, @RequestBody @Valid SubscriptionDto subscriptionDto) {
     log.debug("POST saveSubscriptionUserInCourse");
 
@@ -90,13 +91,21 @@ public class CourseUserController {
         log.warn("User {} not found in AuthUser microservice", subscriptionDto.getUserId());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: User not found in AuthUser microservice");
       }
-      
     }
-
     CourseUserModel courseUserModel = courseUserService.saveAndSendSubscriptionUserInCourse(courseModelOptional.get().convertCourseUserModel(subscriptionDto.getUserId()));
-
     return ResponseEntity.status(HttpStatus.CREATED).body(courseUserModel);
 
+  }
+
+  @DeleteMapping("/courses/users/{userId}")
+  public ResponseEntity<Object> deleteCourseUserByUser(@PathVariable(value = "userId") UUID userId){
+    if(!courseUserService.existsByUserId(userId)){
+      log.warn("No course users found for UserId {}", userId);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No CourseUser found for this userId");
+    }
+    courseUserService.deleteCourseUserByUser(userId);
+    log.info("All course users for UserId {} deleted successfully", userId);
+    return ResponseEntity.status(HttpStatus.OK).body("All course users for this userId deleted successfully");
   }
   
 }
