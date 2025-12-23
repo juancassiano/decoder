@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -45,24 +44,16 @@ public class UserController {
 
   @GetMapping
   public ResponseEntity<Page<UserModel>> getAllUsers(SpecificationTemplate.UserSpec spec,
-   @PageableDefault (page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable, @RequestParam(required = false) UUID courseId) {
+   @PageableDefault (page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
 
-    Page<UserModel> userModelPage = null;
+    Page<UserModel> userModelPage = userService.findAll(spec, pageable);
     
-    if(courseId != null) {
-      log.debug("GET getAllUsers with courseId: {}", courseId);
-      userModelPage = userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable);
-    } else {
-      log.debug("GET getAllUsers without courseId");
-      userModelPage = userService.findAll(spec, pageable);
-    }
     if (!userModelPage.isEmpty()) {
       for(UserModel userModel : userModelPage) {
         userModel.add(linkTo(methodOn(UserController.class).getOneUser(userModel.getUserId())).withSelfRel());
       }
     }      
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(userModelPage);
+    return ResponseEntity.status(HttpStatus.OK).body(userModelPage);
   }
 
   @GetMapping("/{userId}")
@@ -71,8 +62,7 @@ public class UserController {
     if (!userModelOptional.isPresent()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
   }
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(userModelOptional.get());
+    return ResponseEntity.status(HttpStatus.OK).body(userModelOptional.get());
   }
 
   @DeleteMapping("/{userId}")

@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.ead.authuser.models.UserModel;
-import com.ead.authuser.specifications.SpecificationTemplate.UserSpec;
 
 public interface UserService {
 

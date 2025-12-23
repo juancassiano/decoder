@@ -12,10 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import com.ead.authuser.clients.CourseClient;
-import com.ead.authuser.models.UserCourseModel;
 import com.ead.authuser.models.UserModel;
-import com.ead.authuser.repositories.UserCourseRepository;
 import com.ead.authuser.repositories.UserRepository;
 import com.ead.authuser.services.UserService;
 
@@ -24,10 +21,6 @@ public class UserServiceImpl implements UserService {
   
   @Autowired
   private UserRepository userRepository;
-  @Autowired
-  private UserCourseRepository userCourseRepository;
-  @Autowired
-  private CourseClient courseClient;
 
   @Override
   public List<UserModel> findAll() {
@@ -42,16 +35,7 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public void delete(UserModel userModel) {
-    boolean deleteUserCourseInCourse = false;
-    List<UserCourseModel> usersCourseModelList = userCourseRepository.findAllUserCourseIntoUser(userModel.getUserId());
-    if (!usersCourseModelList.isEmpty()) {
-      userCourseRepository.deleteAll(usersCourseModelList);
-      deleteUserCourseInCourse = true;
-    }
     userRepository.delete(userModel);
-    if(deleteUserCourseInCourse){
-      courseClient.deleteUserInCourse(userModel.getUserId());
-    }
   }
 
   @Override

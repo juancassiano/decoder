@@ -10,7 +10,6 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.ead.course.models.CourseModel;
-import com.ead.course.models.CourseUserModel;
 import com.ead.course.models.LessonModel;
 import com.ead.course.models.ModuleModel;
 
@@ -59,13 +58,5 @@ public class SpecificationTemplate {
       );
     };
   }
-
-  public static Specification<CourseModel> courseUserId(final UUID userId){
-    return (root, query, criteriaBuilder) -> {
-      query.distinct(true);
-      Root<CourseModel> course = root;
-      Join<CourseModel, CourseUserModel> courseProd = course.join("coursesUsers");
-      return criteriaBuilder.equal(courseProd.get("userId"), userId);
-    };
-  }
+  
 }
