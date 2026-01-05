@@ -14,8 +14,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.JoinColumn;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -64,6 +67,14 @@ public class CourseModel  implements Serializable{
   @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   @Fetch(FetchMode.SUBSELECT)
   //@OnDelete(action = OnDeleteAction.CASCADE)
-  Set<ModuleModel> modules;
+  private Set<ModuleModel> modules;
+
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "TB_COURSES_USERS",
+    joinColumns = { @JoinColumn(name = "course_id")},
+    inverseJoinColumns = { @JoinColumn (name = "user_id")}
+  )
+  private Set<UserModel> users;
 
 }
