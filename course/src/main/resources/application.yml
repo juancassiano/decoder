@@ -20,6 +20,8 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+  rabbitmq:
+    addresses: amqps://mlktigwx:P6_u_mqppN4w9yBG-x04ms564UNEioUo@shark.rmq.cloudamqp.com/mlktigwx
 
 logging:
   level:
