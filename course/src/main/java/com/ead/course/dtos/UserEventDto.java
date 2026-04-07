@@ -1,6 +1,10 @@
-package com.ead.authuser.publishes;
+package com.ead.course.dtos;
 
 import java.util.UUID;
+
+import org.springframework.beans.BeanUtils;
+
+import com.ead.course.models.UserModel;
 
 import lombok.Data;
 
@@ -18,4 +22,9 @@ public class UserEventDto {
   private String imageUrl;
   private String actionType;
 
+  public UserModel convertToUserModel(){
+    UserModel userModel = new UserModel();
+    BeanUtils.copyProperties(this, userModel);
+    return userModel;
+  }
 }

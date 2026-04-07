@@ -21,7 +21,11 @@ spring:
         format_sql: true
         show_sql: true
   rabbitmq:
-    addresses: amqps://mlktigwx:P6_u_mqppN4w9yBG-x04ms564UNEioUo@shark.rmq.cloudamqp.com/mlktigwx
+    host: leopard.lmq.cloudamqp.com
+    port: 5672
+    username: uwrdezba
+    password: TV9dE9BNMST-bdTDisKkUQ3Ihz2UJrRX
+    virtual-host: uwrdezba
 
 logging:
   level:
@@ -34,6 +38,12 @@ ead:
   api:
     url:
       authuser: 'http://ead-authuser-service/ead-authuser'
+  broker:
+    exchange:
+      userEventExchange: ead.userevent 
+    queue:
+      userEventQueue:
+        name: ead.userevent.ms.course    
 
 
 eureka:

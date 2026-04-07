@@ -12,21 +12,22 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Configuration
 public class RabbitmqConfig {
-  
-  @Autowired
-  private CachingConnectionFactory cachingConnectionFactory;
+	
+	@Autowired
+	CachingConnectionFactory cachingConnectionFactory;
+	
+	@Bean
+	public RabbitTemplate rabbitTemplate() {
+		RabbitTemplate template = new RabbitTemplate(cachingConnectionFactory);
+		template.setMessageConverter(messageConverter());
+		return template;
+	}
 
-  @Bean
-  public RabbitTemplate rabbitTemplate() {
-   RabbitTemplate rabbitTemplate = new RabbitTemplate(cachingConnectionFactory);
-   rabbitTemplate.setMessageConverter(messageConverter());
-   return rabbitTemplate;
-  }
-
-  @Bean
-  public Jackson2JsonMessageConverter messageConverter() {
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
-    return new Jackson2JsonMessageConverter(objectMapper);
-  }
+	@Bean
+	public Jackson2JsonMessageConverter messageConverter() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
+		return new Jackson2JsonMessageConverter(objectMapper);
+	}
+	
 }

@@ -16,9 +16,9 @@ import javax.persistence.Table;
 import org.springframework.beans.BeanUtils;
 import org.springframework.hateoas.RepresentationModel;
 
+import com.ead.authuser.dtos.UserEventDto;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
-import com.ead.authuser.publishes.UserEventDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
