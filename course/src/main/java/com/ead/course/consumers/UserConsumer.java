@@ -19,7 +19,7 @@ public class UserConsumer {
 
   @Autowired
   private UserService userService;
-  
+
 	@RabbitListener(
 		bindings = @QueueBinding(
 			value = @Queue(value = "${ead.broker.queue.userEventQueue.name}", durable = "true"),
@@ -31,9 +31,11 @@ public class UserConsumer {
 
     switch (ActionType.valueOf(userEventDto.getActionType())) {
       case CREATE:
+      case UPDATE:
         userService.save(userModel);
         break;
-    
+      case DELETE:
+        userService.delete(userEventDto.getUserId());
       default:
         break;
     }
