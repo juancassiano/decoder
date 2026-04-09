@@ -1,5 +1,6 @@
 package com.ead.course.validation;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import com.ead.course.dtos.CourseDto;
+import com.ead.course.models.UserModel;
+import com.ead.course.services.UserService;
 
 @Component
 public class CourseValidator implements Validator {
@@ -15,6 +18,9 @@ public class CourseValidator implements Validator {
   @Autowired
   @Qualifier("defaultValidator")
   private Validator validator;
+
+  @Autowired
+  private UserService userService;
 
   @Override
   public boolean supports(Class<?> clazz) {
@@ -32,19 +38,13 @@ public class CourseValidator implements Validator {
   }
 
   private void validateUserInstructor(UUID userInstructor, Errors errors){
-    /*
-    ResponseEntity<UserDto> responseUserInstructor;
-
-    try{
-      responseUserInstructor = authUserClient.getOneUserById(userInstructor);
-      if(responseUserInstructor.getBody().getUserType().equals(UserType.STUDENT)){
-        errors.rejectValue("userInstructor", "UserInstructorError", "User Instructor cannot be a STUDENT! user must be INSTRUCTOR or ADMIN.");
-      }
-  }catch(HttpStatusCodeException e){
-    if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
+    Optional<UserModel> userModelOptional = userService.findById(userInstructor);
+    if(userModelOptional.isEmpty()){
       errors.rejectValue("userInstructor", "UserInstructorError", "User Instructor not found");
-      }
     }
-    */  
+    if(userModelOptional.get().getUserType().equals("STUDENT")){
+      errors.rejectValue("userInstructor", "UserInstructorError", "User Instructor cannot be a STUDENT! user must be INSTRUCTOR or ADMIN.");
+    }
+
   }
 }

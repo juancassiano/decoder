@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.ead.course.models.CourseModel;
 import com.ead.course.models.LessonModel;
 import com.ead.course.models.ModuleModel;
+import com.ead.course.models.UserModel;
 import com.ead.course.repositories.CourseRepository;
 import com.ead.course.repositories.UserRepository;
 import com.ead.course.repositories.LessonRepository;
@@ -63,6 +64,25 @@ public class CourseServiceImpl implements CourseService {
   @Override
   public Page<CourseModel> findAll(Specification<CourseModel> spec, Pageable pageable) {
     return courseRepository.findAll(spec, pageable);
+  }
+
+  @Override
+  public boolean existsByCourseAndUser(UUID courseId, UUID userId) {
+    return courseRepository.existsByCourseAndUser(courseId, userId);
+  }
+
+  @Override
+  @Transactional
+  public void saveSubscriptionUserInCourse(UUID courseId, UUID userId) {
+    CourseModel course = courseRepository.findById(courseId)
+        .orElseThrow(() -> new RuntimeException("Course not found"));
+
+    UserModel user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+
+    course.getUsers().add(user);
+
+    courseRepository.save(course);
   }
   
 }
