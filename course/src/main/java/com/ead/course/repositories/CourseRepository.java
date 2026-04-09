@@ -25,7 +25,7 @@ public interface CourseRepository extends JpaRepository<CourseModel, UUID>, JpaS
   @Modifying
   @Transactional
   @Query(value = "DELETE FROM tb_courses_users WHERE user_id = :userId", nativeQuery = true)
-  int deleteCoursesUsersByUserId(@Param("userId") UUID userId);
+  void deleteCourseUserByUserId(@Param("userId") UUID userId);
 
 
 }
