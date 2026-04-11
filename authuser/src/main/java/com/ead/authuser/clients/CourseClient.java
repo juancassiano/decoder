@@ -1,5 +1,6 @@
 package com.ead.authuser.clients;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +20,7 @@ import com.ead.authuser.dtos.CourseDto;
 import com.ead.authuser.dtos.ResponsePageDto;
 import com.ead.authuser.services.UtilsService;
 
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -34,12 +36,14 @@ public class CourseClient {
   @Value("${ead.api.url.courses}")
   private String REQUEST_URL_COURSE;
   
+  @Retry(name = "retryInstance", fallbackMethod = "retryfallback")
   public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable){
     List<CourseDto> searchResult = null;
     String url = REQUEST_URL_COURSE + utilsService.createUrl(userId, pageable);
 
     log.debug("GET getAllCoursesByUser: {}", url);
     log.info("GET getAllCoursesByUser: {}", url);
+    log.info("Starting request course microsservice");
     try {
       ParameterizedTypeReference<ResponsePageDto<CourseDto>> responseType = new ParameterizedTypeReference<ResponsePageDto<CourseDto>>() {};
       ResponseEntity<ResponsePageDto<CourseDto>> result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
@@ -54,6 +58,12 @@ public class CourseClient {
     }
     log.info("Ending request /courses userId {}", userId);
 
+    return new PageImpl<>(searchResult);
+  }
+
+  public Page<CourseDto> retryfallback(UUID userId, Pageable pageable, Throwable e){
+    log.error("Fallback method called for userId {}: {}", userId, e.getMessage());
+    List<CourseDto> searchResult = new ArrayList<>();
     return new PageImpl<>(searchResult);
   }
 }
