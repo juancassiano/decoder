@@ -20,6 +20,7 @@ import com.ead.authuser.dtos.CourseDto;
 import com.ead.authuser.dtos.ResponsePageDto;
 import com.ead.authuser.services.UtilsService;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.log4j.Log4j2;
 
@@ -36,7 +37,8 @@ public class CourseClient {
   @Value("${ead.api.url.courses}")
   private String REQUEST_URL_COURSE;
   
-  @Retry(name = "retryInstance", fallbackMethod = "retryfallback")
+  //@Retry(name = "retryInstance", fallbackMethod = "retryfallback")
+	@CircuitBreaker(name = "circuitbreakerInstance"/*, fallbackMethod = "circuitbreakerfallback"*/)
   public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable){
     List<CourseDto> searchResult = null;
     String url = REQUEST_URL_COURSE + utilsService.createUrl(userId, pageable);
@@ -63,6 +65,12 @@ public class CourseClient {
 
   public Page<CourseDto> retryfallback(UUID userId, Pageable pageable, Throwable e){
     log.error("Fallback method called for userId {}: {}", userId, e.getMessage());
+    List<CourseDto> searchResult = new ArrayList<>();
+    return new PageImpl<>(searchResult);
+  }
+
+  public Page<CourseDto> circuitBreakerFallback(UUID userId, Pageable pageable, Throwable e){
+    log.error("Circuit breaker fallback method called for userId {}: {}", userId, e.getMessage());
     List<CourseDto> searchResult = new ArrayList<>();
     return new PageImpl<>(searchResult);
   }
